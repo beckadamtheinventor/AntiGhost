@@ -1,6 +1,6 @@
 
 
-package com.beckati.rlantighost;
+package com.beckati.AntiGhost;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +33,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = RLAntiGhost.MODID, name = RLAntiGhost.NAME, version = RLAntiGhost.VERSION)
-public class RLAntiGhost
+@Mod(modid = AntiGhost.MODID, name = AntiGhost.NAME, version = AntiGhost.VERSION)
+public class AntiGhost
 {
-	public static final String MODID = "rlantighost";
-	public static final String NAME = "RL AntiGhost";
+	public static final String MODID = "AntiGhost";
+	public static final String NAME = "AntiGhost";
 	public static final String VERSION = "1.0";
 
 	private static Logger logger;
@@ -53,7 +53,7 @@ public class RLAntiGhost
 	public void init(FMLInitializationEvent event)
 	{
 		MinecraftForge.EVENT_BUS.register(this);
-		this.logger.log(Level.INFO, "RLAntiGhost Initialized");
+		this.logger.log(Level.INFO, "AntiGhost Initialized");
 	}
 
 	@SubscribeEvent
