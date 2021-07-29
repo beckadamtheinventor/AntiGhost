@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = AntiGhost.MODID, name = AntiGhost.NAME, version = AntiGhost.VERSION)
 public class AntiGhost
 {
-	public static final String MODID = "AntiGhost";
+	public static final String MODID = "antighost";
 	public static final String NAME = "AntiGhost";
 	public static final String VERSION = "1.0";
 
@@ -67,7 +67,7 @@ public class AntiGhost
 	}
 
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
-//		this.logger.log(Level.INFO, "Reloading nearby potential ghost blocks");
+		// this.logger.log(Level.INFO, "Requesting nearby blocks from server");
 		Minecraft mc=Minecraft.getMinecraft();
 		NetHandlerPlayClient conn = mc.getConnection();
 		if (conn==null)
@@ -78,15 +78,12 @@ public class AntiGhost
 				for (int dz=-1; dz<=1; dz++) {
 					BlockPos bpos = new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz);
 					IBlockState block = mc.world.getBlockState(bpos);
-
-					if (Block.isEqualTo(block.getBlock(), Blocks.AIR)) {
-						CPacketPlayerDigging packet=new CPacketPlayerDigging(
-								CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, 
-								new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz),
-								EnumFacing.UP	   // with ABORT_DESTROY_BLOCK, this value is unused
-						);
-						conn.sendPacket(packet);
-					}
+					CPacketPlayerDigging packet=new CPacketPlayerDigging(
+							CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, 
+							new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz),
+							EnumFacing.UP	   // with ABORT_DESTROY_BLOCK, this value is unused
+					);
+					conn.sendPacket(packet);
 				}
 	}
 }
