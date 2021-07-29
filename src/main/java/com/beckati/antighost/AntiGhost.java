@@ -38,7 +38,7 @@ public class AntiGhost
 {
 	public static final String MODID = "antighost";
 	public static final String NAME = "AntiGhost";
-	public static final String VERSION = "1.0";
+	public static final String VERSION = "1.1";
 
 	private static Logger logger;
 	int ticksToAutoRun;
