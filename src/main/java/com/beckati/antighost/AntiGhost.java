@@ -73,17 +73,29 @@ public class AntiGhost
 		if (conn==null)
 			return;
 		BlockPos pos=sender.getPosition();
-		for (int dx=-1; dx<=1; dx++)
-			for (int dy=-2; dy<=2; dy++)
-				for (int dz=-1; dz<=1; dz++) {
-					BlockPos bpos = new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz);
-					IBlockState block = mc.world.getBlockState(bpos);
-					CPacketPlayerDigging packet=new CPacketPlayerDigging(
-							CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, 
-							new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz),
-							EnumFacing.UP	   // with ABORT_DESTROY_BLOCK, this value is unused
-					);
-					conn.sendPacket(packet);
+		for (int dy=-4; dy<=3; dy++) {
+			BlockPos bpos = new BlockPos(pos.getX(), pos.getY()+dy, pos.getZ());
+			IBlockState block = mc.world.getBlockState(bpos);
+			CPacketPlayerDigging packet=new CPacketPlayerDigging(
+					CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, 
+					new BlockPos(pos.getX(), pos.getY()+dy, pos.getZ()),
+					EnumFacing.UP	   // with ABORT_DESTROY_BLOCK, this value is unused
+			);
+			conn.sendPacket(packet);
+		}
+		for (int dy=-2; dy<=2; dy++)
+			for (int dx=-2; dx<=2; dx++)
+				for (int dz=-2; dz<=2; dz++) {
+					if (dx != 0 && dz != 0) {
+						BlockPos bpos = new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz);
+						IBlockState block = mc.world.getBlockState(bpos);
+						CPacketPlayerDigging packet=new CPacketPlayerDigging(
+								CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, 
+								new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz),
+								EnumFacing.UP	   // with ABORT_DESTROY_BLOCK, this value is unused
+						);
+						conn.sendPacket(packet);
+					}
 				}
 	}
 }
