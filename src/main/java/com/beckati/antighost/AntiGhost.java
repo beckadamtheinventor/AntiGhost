@@ -38,10 +38,14 @@ public class AntiGhost
 {
 	public static final String MODID = "antighost";
 	public static final String NAME = "AntiGhost";
-	public static final String VERSION = "1.1";
+	public static final String VERSION = "1.2";
+
+	private static final int ticksPerAutoRun = 10;
+
+	private int ticksToAutoRun;
 
 	private static Logger logger;
-	int ticksToAutoRun;
+
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
@@ -53,13 +57,14 @@ public class AntiGhost
 	public void init(FMLInitializationEvent event)
 	{
 		MinecraftForge.EVENT_BUS.register(this);
+		ticksToAutoRun = 0;
 		this.logger.log(Level.INFO, "AntiGhost Initialized");
 	}
 
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
-			if (++ticksToAutoRun > 20) {
+			if (++ticksToAutoRun > ticksPerAutoRun) {
 				ticksToAutoRun = 0;
 				this.execute(null, Minecraft.getMinecraft().player, null);
 			}
@@ -98,4 +103,5 @@ public class AntiGhost
 					}
 				}
 	}
+
 }
