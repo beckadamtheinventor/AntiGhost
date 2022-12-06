@@ -1,34 +1,24 @@
 
 
-package com.beckati.AntiGhost;
+package com.beckati.antighost;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -38,19 +28,20 @@ public class AntiGhost
 {
 	public static final String MODID = "antighost";
 	public static final String NAME = "AntiGhost";
-	public static final String VERSION = "1.2";
+	public static final String VERSION = "1.3";
 
-	private static final int ticksPerAutoRun = 10;
+	public static File config;
+
 
 	private int ticksToAutoRun;
 
 	private static Logger logger;
 
-
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		logger = event.getModLog();
+		ConfigHandler.registerConfig(event);
 	}
 
 	@EventHandler
@@ -64,7 +55,7 @@ public class AntiGhost
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END) {
-			if (++ticksToAutoRun > ticksPerAutoRun) {
+			if (++ticksToAutoRun > ConfigHandler.ticksPerAutoRun) {
 				ticksToAutoRun = 0;
 				this.execute(null, Minecraft.getMinecraft().player, null);
 			}
@@ -78,28 +69,20 @@ public class AntiGhost
 		if (conn==null)
 			return;
 		BlockPos pos=sender.getPosition();
-		for (int dy=-4; dy<=3; dy++) {
-			BlockPos bpos = new BlockPos(pos.getX(), pos.getY()+dy, pos.getZ());
-			IBlockState block = mc.world.getBlockState(bpos);
-			CPacketPlayerDigging packet=new CPacketPlayerDigging(
-					CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, 
-					new BlockPos(pos.getX(), pos.getY()+dy, pos.getZ()),
-					EnumFacing.UP	   // with ABORT_DESTROY_BLOCK, this value is unused
-			);
-			conn.sendPacket(packet);
-		}
-		for (int dy=-2; dy<=2; dy++)
-			for (int dx=-2; dx<=2; dx++)
-				for (int dz=-2; dz<=2; dz++) {
+		for (int dy=-1; dy<=0; dy++)
+			for (int dx=-1; dx<=1; dx++)
+				for (int dz=-1; dz<=1; dz++) {
 					if (dx != 0 && dz != 0) {
-						BlockPos bpos = new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz);
-						IBlockState block = mc.world.getBlockState(bpos);
-						CPacketPlayerDigging packet=new CPacketPlayerDigging(
-								CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, 
-								new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz),
-								EnumFacing.UP	   // with ABORT_DESTROY_BLOCK, this value is unused
-						);
-						conn.sendPacket(packet);
+						BlockPos blockPos = new BlockPos(pos.getX()+dx, pos.getY()+dy, pos.getZ()+dz);
+						IBlockState block = mc.world.getBlockState(blockPos);
+						if (block.equals(Blocks.AIR)) {
+							CPacketPlayerDigging packet = new CPacketPlayerDigging(
+									CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,
+									new BlockPos(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz),
+									EnumFacing.UP       // with ABORT_DESTROY_BLOCK, this value is unused
+							);
+							conn.sendPacket(packet);
+						}
 					}
 				}
 	}
